@@ -1,10 +1,10 @@
-import { ApolloServer } from "@apollo/server";
-import { expressMiddleware } from "@apollo/server/express4";
-import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
-import express from "express";
-import http from "http";
-import cors from "cors";
-import bodyParser from "body-parser";
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import express from 'express';
+import http from 'http';
+import cors from 'cors';
+import bodyParser from 'body-parser';
 
 // The GraphQL schema
 const typeDefs = `#graphql
@@ -16,7 +16,7 @@ type Query {
 // A map of functions which return data for the schema.
 const resolvers = {
   Query: {
-    hello: () => "world",
+    hello: () => 'world',
   },
 };
 
@@ -35,7 +35,10 @@ const server = new ApolloServer({
 
   app.use(cors(), bodyParser.json(), expressMiddleware(server));
 
-  await new Promise((resolve) => httpServer.listen({ port: 4000 }, () => resolve(null)));
+  await new Promise((resolve) => {
+    httpServer.listen({ port: 4000 }, () => resolve(null));
+  });
 
-  console.log(`🚀 Server ready at http://localhost:4000`);
+  // eslint-disable-next-line no-console
+  console.log('🚀 Server ready at http://localhost:4000');
 })();
