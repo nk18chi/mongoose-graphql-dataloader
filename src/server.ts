@@ -6,6 +6,7 @@ import http from 'http';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import connectMongoDB from './mongo/connect';
+import logger from './config/logger';
 import 'dotenv/config';
 
 // The GraphQL schema
@@ -43,6 +44,6 @@ const server = new ApolloServer({
 
   await connectMongoDB();
 
-  // eslint-disable-next-line no-console
-  console.log('🚀 Server ready at http://localhost:4000');
+  logger.info('🚀 Server ready at http://localhost:4000');
+  logger.error('GET on /history', new Error('something goes wrong'));
 })();
