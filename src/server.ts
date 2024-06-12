@@ -5,6 +5,8 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import connectMongoDB from './mongo/connect';
+import 'dotenv/config';
 
 // The GraphQL schema
 const typeDefs = `#graphql
@@ -38,6 +40,8 @@ const server = new ApolloServer({
   await new Promise((resolve) => {
     httpServer.listen({ port: 4000 }, () => resolve(null));
   });
+
+  await connectMongoDB();
 
   // eslint-disable-next-line no-console
   console.log('🚀 Server ready at http://localhost:4000');
