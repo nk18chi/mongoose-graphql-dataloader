@@ -1,9 +1,10 @@
-import { connect } from 'mongoose';
+import { connect, set } from 'mongoose';
 import logger from '../config/logger';
 import seedData from './seed';
 
 const connectMongoDB = async () => {
   await connect(process.env.MONGO_URI);
+  set('debug', true);
   await seedData();
 
   // eslint-disable-next-line no-console

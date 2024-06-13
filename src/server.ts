@@ -8,18 +8,32 @@ import bodyParser from 'body-parser';
 import connectMongoDB from './mongo/connect';
 import logger from './config/logger';
 import 'dotenv/config';
+import User from './models/User.schema';
+import IUser from './models/User.type';
 
 // The GraphQL schema
 const typeDefs = `#graphql
+type User {
+  id: ID!
+  name: String!
+  followers: [User]
+  following: [User]
+}
+
 type Query {
-  hello: String
+  getUsers: [User]
 }
 `;
 
 // A map of functions which return data for the schema.
 const resolvers = {
   Query: {
-    hello: () => 'world',
+    getUsers: async () => User.find(),
+  },
+
+  User: {
+    followers: async (parent: IUser) => User.find({ _id: { $in: parent.followers } }),
+    following: async (parent: IUser) => User.find({ _id: { $in: parent.following } }),
   },
 };
 
@@ -45,5 +59,4 @@ const server = new ApolloServer({
   await connectMongoDB();
 
   logger.info('🚀 Server ready at http://localhost:4000');
-  logger.error('GET on /history', new Error('something goes wrong'));
 })();
