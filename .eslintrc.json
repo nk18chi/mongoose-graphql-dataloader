@@ -7,6 +7,7 @@
       "typescript": {}
     }
   },
+  "ignorePatterns": ["dist/", "node_modules/", "coverage/", "html"],
   "rules": {
     "no-underscore-dangle": "off",
     "max-len": ["error", { "code": 120 }],
@@ -19,6 +20,7 @@
         "ts": "never",
         "tsx": "never"
       }
-    ]
+    ],
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": ["**/*.test.ts", "**/*.config.mts"] }]
   }
 }
