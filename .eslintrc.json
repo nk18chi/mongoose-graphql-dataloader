@@ -7,10 +7,16 @@
       "typescript": {}
     }
   },
-  "ignorePatterns": ["dist/", "node_modules/", "coverage/", "html"],
+  "ignorePatterns": ["dist/", "node_modules/", "coverage/"],
   "rules": {
     "no-underscore-dangle": "off",
     "max-len": ["error", { "code": 120 }],
+    "object-curly-newline": [
+      "error",
+      {
+        "ImportDeclaration": "never"
+      }
+    ],
     "import/extensions": [
       "error",
       "ignorePackages",

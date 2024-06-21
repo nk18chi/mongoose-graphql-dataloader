@@ -2,9 +2,11 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    reporters: ['html'],
+    mockReset: true,
+    clearMocks: true,
+    globals: true,
     coverage: {
-      exclude: ['html/assets/**', 'src/models/**', '**/*.seed.ts'],
+      exclude: ['html/assets/**', 'src/index.ts', 'src/models/**', '**/*.seed.ts'],
       enabled: true,
       thresholds: {
         branches: 75,
