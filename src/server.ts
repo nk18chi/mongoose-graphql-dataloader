@@ -10,19 +10,31 @@ import logger from './config/logger';
 import typeDefs from './graphql/schemas';
 import resolvers from './graphql/resolvers';
 import 'dotenv/config';
+import userDataLoader from './dataloader/User.dataLoader';
+import Context from './graphql/interface/Context.interface';
 
 const runServer = async () => {
   const app = express();
   const httpServer = http.createServer(app);
 
-  const server = new ApolloServer({
+  const server = new ApolloServer<Context>({
     typeDefs,
     resolvers,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
   await server.start();
 
-  app.use(cors(), bodyParser.json(), expressMiddleware(server));
+  app.use(
+    cors(),
+    bodyParser.json(),
+    expressMiddleware(server, {
+      context: async () => ({
+        dataLoaders: {
+          userDataLoader,
+        },
+      }),
+    }),
+  );
 
   await new Promise((resolve) => {
     httpServer.listen({ port: 4000 }, () => resolve(null));

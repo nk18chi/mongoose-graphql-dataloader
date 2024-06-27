@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 import User from '../../models/User.schema';
 import IUser from '../../models/User.type';
-import userDataLoader from '../../dataloader/User.dataLoader';
+import Context from '../interface/Context.interface';
 
 const userResolver = {
   Query: {
@@ -18,8 +18,18 @@ const userResolver = {
   },
 
   OptimizedUser: {
-    followers: async (user: IUser) => userDataLoader.loadMany(user.followers as unknown as ArrayLike<Types.ObjectId>),
-    following: async (user: IUser) => userDataLoader.loadMany(user.following as unknown as ArrayLike<Types.ObjectId>),
+    followers: async (user: IUser, _: any, context: Context) => {
+      const {
+        dataLoaders: { userDataLoader },
+      } = context;
+      return userDataLoader.loadMany(user.followers as unknown as ArrayLike<Types.ObjectId>);
+    },
+    following: async (user: IUser, _: any, context: Context) => {
+      const {
+        dataLoaders: { userDataLoader },
+      } = context;
+      return userDataLoader.loadMany(user.following as unknown as ArrayLike<Types.ObjectId>);
+    },
   },
 };
 
