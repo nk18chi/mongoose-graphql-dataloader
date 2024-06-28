@@ -1,9 +1,9 @@
 import { Types } from 'mongoose';
 import User from '../../models/User.schema';
+import { Resolvers } from '../types';
 import IUser from '../../models/User.type';
-import Context from '../interface/Context.interface';
 
-const userResolver = {
+const userResolver: Resolvers = {
   Query: {
     // call User.find method 53 times
     // (1 time for getUsers + 26 times for 26 user's followers + 26 times for 26 user's following)
@@ -13,22 +13,22 @@ const userResolver = {
     optimizedGetUsers: async () => User.find(),
   },
   User: {
-    followers: async (user: IUser) => User.find({ _id: { $in: user.followers } }),
-    following: async (user: IUser) => User.find({ _id: { $in: user.following } }),
+    followers: async (user) => User.find({ _id: { $in: user.followers } }),
+    following: async (user) => User.find({ _id: { $in: user.following } }),
   },
 
   OptimizedUser: {
-    followers: async (user: IUser, _: any, context: Context) => {
+    followers: async (user, _, context) => {
       const {
         dataLoaders: { userDataLoader },
       } = context;
-      return userDataLoader.loadMany(user.followers as unknown as ArrayLike<Types.ObjectId>);
+      return (await userDataLoader.loadMany(user.followers as unknown as ArrayLike<Types.ObjectId>)) as IUser[];
     },
-    following: async (user: IUser, _: any, context: Context) => {
+    following: async (user, _, context) => {
       const {
         dataLoaders: { userDataLoader },
       } = context;
-      return userDataLoader.loadMany(user.following as unknown as ArrayLike<Types.ObjectId>);
+      return (await userDataLoader.loadMany(user.following as unknown as ArrayLike<Types.ObjectId>)) as IUser[];
     },
   },
 };

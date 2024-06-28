@@ -1,21 +1,21 @@
 const userTypeDef = `#graphql
 type User {
-  id: ID!
+  _id: ID!
   name: String!
   followers: [User]
   following: [User]
 }
 
 type OptimizedUser {
-  id: ID!
+  _id: ID!
   name: String!
-  followers: [OptimizedUser]
-  following: [OptimizedUser]
+  followers: [User]
+  following: [User]
 }
 
 type Query {
   getUsers: [User]
-  optimizedGetUsers: [OptimizedUser]
+  optimizedGetUsers: [User]
 }
 `;
 

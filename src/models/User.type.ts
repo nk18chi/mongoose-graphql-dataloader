@@ -1,6 +1,7 @@
-import { Schema } from 'mongoose';
+import { Types, Schema } from 'mongoose';
 
-interface IUser {
+export interface IUser {
+  _id: Types.ObjectId;
   name: string;
   followers: Schema.Types.ObjectId[];
   following: Schema.Types.ObjectId[];

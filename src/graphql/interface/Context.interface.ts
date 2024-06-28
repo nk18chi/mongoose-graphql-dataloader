@@ -3,7 +3,7 @@ import { Types } from 'mongoose';
 import { BaseContext } from '@apollo/server';
 import IUser from '../../models/User.type';
 
-interface Context extends BaseContext {
+export interface Context extends BaseContext {
   dataLoaders: {
     userDataLoader: DataLoader<Types.ObjectId, IUser, Types.ObjectId>;
   };
