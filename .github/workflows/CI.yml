@@ -1,0 +1,30 @@
+name: Run CI
+
+run-name: Run CI for ${{ github.sha }}
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  run-ci:
+    name: Run CI
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: NPM Install
+        run: npm install
+
+      - name: Run unit tests
+        run: npm run test
