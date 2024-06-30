@@ -29,7 +29,7 @@ export type OptimizedUser = {
 export type Query = {
   __typename?: 'Query';
   getUsers?: Maybe<Array<Maybe<User>>>;
-  optimizedGetUsers?: Maybe<Array<Maybe<User>>>;
+  optimizedGetUsers?: Maybe<Array<Maybe<OptimizedUser>>>;
 };
 
 export type User = {
@@ -154,7 +154,7 @@ export type QueryResolvers<
   ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query'],
 > = {
   getUsers?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
-  optimizedGetUsers?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
+  optimizedGetUsers?: Resolver<Maybe<Array<Maybe<ResolversTypes['OptimizedUser']>>>, ParentType, ContextType>;
 };
 
 export type UserResolvers<

@@ -15,7 +15,7 @@ type OptimizedUser {
 
 type Query {
   getUsers: [User]
-  optimizedGetUsers: [User]
+  optimizedGetUsers: [OptimizedUser]
 }
 `;
 
