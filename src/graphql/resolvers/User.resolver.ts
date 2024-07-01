@@ -11,6 +11,8 @@ const userResolver: Resolvers = {
 
     // call User.find method 2 time (1 time for getUsers + 1 time for 26 user's followers and 26 user's following)
     optimizedGetUsers: async () => User.find(),
+
+    authorizedGetUsers: async () => User.find(),
   },
   User: {
     followers: async (user) => User.find({ _id: { $in: user.followers } }),

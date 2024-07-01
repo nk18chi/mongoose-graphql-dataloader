@@ -5,6 +5,8 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import { applyMiddleware } from 'graphql-middleware';
+import { makeExecutableSchema } from '@graphql-tools/schema';
 import connectMongoDB from './mongo/connect';
 import logger from './config/logger';
 import typeDefs from './graphql/schemas';
@@ -12,14 +14,22 @@ import resolvers from './graphql/resolvers';
 import 'dotenv/config';
 import userDataLoader from './dataloader/User.dataLoader';
 import Context from './graphql/interface/Context.interface';
+import permissions from './graphql/authorizations/permissions';
 
 const runServer = async () => {
   const app = express();
   const httpServer = http.createServer(app);
 
+  const schema = applyMiddleware(
+    makeExecutableSchema({
+      typeDefs,
+      resolvers,
+    }),
+    permissions,
+  );
+
   const server = new ApolloServer<Context>({
-    typeDefs,
-    resolvers,
+    schema,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
   await server.start();

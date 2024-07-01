@@ -16,6 +16,7 @@ type OptimizedUser {
 type Query {
   getUsers: [User]
   optimizedGetUsers: [OptimizedUser]
+  authorizedGetUsers: [User]
 }
 `;
 
