@@ -6,6 +6,7 @@ import resolvers from '.';
 import User from '../../models/User.schema';
 import IUser from '../../models/User.type';
 import userDataLoader from '../../dataloader/User.dataLoader';
+import { GQL_QUERY_USERS, GQL_QUERY_OPTIMIZED_USERS } from '../gql/User.gql';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const usersMock: any = [
@@ -39,22 +40,7 @@ describe('User.resolver.ts', () => {
   });
   test('should call getUsers with following/followers', async () => {
     const response = await testServer.executeOperation<{ getUsers: IUser[] }>({
-      query: `
-        query Users {
-          getUsers {
-            _id
-            name
-            following {
-              _id
-              name
-            }
-            followers {
-              _id
-              name
-            }
-          }
-        }
-      `,
+      query: GQL_QUERY_USERS,
     });
     expect(User.find).toHaveBeenCalledTimes(1 + usersMock.length * 2);
     assert(response.body.kind === 'single');
@@ -64,22 +50,7 @@ describe('User.resolver.ts', () => {
   test('should call optimizedGetUsers with following/followers', async () => {
     const response = await testServer.executeOperation<{ optimizedGetUsers: IUser[] }>(
       {
-        query: `
-        query OptimizedGetUsers {
-          optimizedGetUsers {
-            _id
-            name
-            following {
-              _id
-              name
-            }
-            followers {
-              _id
-              name
-            }
-          }
-        }
-      `,
+        query: GQL_QUERY_OPTIMIZED_USERS,
       },
       {
         contextValue: {
