@@ -38,6 +38,7 @@ const seedData = async () => {
     ],
     { ordered: false },
   );
+
   const followList = [
     {
       target: 'Alice',
@@ -72,7 +73,6 @@ const seedData = async () => {
       },
     );
   });
-
   logger.info('User data is seeded');
 };
 

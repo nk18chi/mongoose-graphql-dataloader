@@ -74,7 +74,6 @@ const runServer = async () => {
       }),
     }),
   );
-
   await new Promise((resolve) => {
     if (process.env.NODE_ENV === 'test') {
       resolve(null);
@@ -82,9 +81,7 @@ const runServer = async () => {
     }
     httpServer.listen({ port: process.env.LOCALHOST_PORT }, () => resolve(null));
   });
-
   await connectMongoDB();
-
   logger.info('🚀 Server ready at http://localhost:4000');
 
   return app;
