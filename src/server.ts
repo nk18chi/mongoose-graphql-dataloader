@@ -7,6 +7,8 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import { applyMiddleware } from 'graphql-middleware';
 import { makeExecutableSchema } from '@graphql-tools/schema';
+import { fieldExtensionsEstimator, getComplexity, simpleEstimator } from 'graphql-query-complexity';
+import { OperationDefinitionNode as OperationNode } from 'graphql';
 import connectMongoDB from './mongo/connect';
 import logger from './config/logger';
 import typeDefs from './graphql/schemas';
@@ -28,9 +30,36 @@ const runServer = async () => {
     permissions,
   );
 
+  const MAX_COMPLEXITY = process.env.GRAPHQL_QUERY_MAX_COMPLEXITY;
   const server = new ApolloServer<Context>({
     schema,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      {
+        requestDidStart: async () => ({
+          async didResolveOperation({ request, document }) {
+            const operationName = request.operationName ?? (document.definitions[0] as OperationNode).name?.value;
+            if (operationName === 'IntrospectionQuery') return;
+            const complexity = getComplexity({
+              schema,
+              operationName,
+              query: document,
+              variables: request.variables,
+              estimators: [fieldExtensionsEstimator(), simpleEstimator({ defaultComplexity: 1 })],
+            });
+
+            if (complexity > MAX_COMPLEXITY) {
+              // eslint-disable-next-line max-len
+              const errorMessage = `Sorry, too complicated query! ${complexity} exceeded the maximum allowed complexity of ${MAX_COMPLEXITY} by ${operationName}`;
+              const error = new Error(errorMessage);
+              logger.error(errorMessage, error);
+              throw error;
+            }
+            logger.info(`Used query complexity points: ${complexity} by ${operationName}`);
+          },
+        }),
+      },
+    ],
   });
   await server.start();
 
@@ -47,14 +76,14 @@ const runServer = async () => {
   );
 
   await new Promise((resolve) => {
-    httpServer.listen({ port: 4000 }, () => resolve(null));
+    httpServer.listen({ port: process.env.LOCALHOST_PORT }, () => resolve(null));
   });
 
   await connectMongoDB();
 
   logger.info('🚀 Server ready at http://localhost:4000');
 
-  return server;
+  return app;
 };
 
 export default runServer;
