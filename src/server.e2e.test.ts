@@ -10,7 +10,7 @@ describe('e2e: server.ts', () => {
     vi.unstubAllEnvs();
   });
   describe('graphql-query-complexity', async () => {
-    test.only('should throw error when complexity is greater than MAX_COMPLEXITY', async () => {
+    test('should throw error when complexity is greater than MAX_COMPLEXITY', async () => {
       vi.stubEnv('GRAPHQL_QUERY_MAX_COMPLEXITY', '5');
       console.log('1');
       const testApp = await runServer();
