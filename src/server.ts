@@ -19,7 +19,7 @@ import Context from './graphql/interface/Context.interface';
 import permissions from './graphql/authorizations/permissions';
 
 const runServer = async () => {
-  console.log('MONGO_URI', process.env.MONGO_URI === 'mongodb://127.0.0.1:27017/mongoose-graphql-dataloader');
+  console.log('MONGO_URI', process.env.MONGO_URI.slice(0, 15));
   console.log('a');
   const app = express();
   const httpServer = http.createServer(app);
