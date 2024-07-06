@@ -91,6 +91,7 @@ const runServer = async () => {
   await connectMongoDB();
   console.log('g');
   logger.info('🚀 Server ready at http://localhost:4000');
+  console.log('h');
 
   return app;
 };
