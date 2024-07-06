@@ -76,6 +76,10 @@ const runServer = async () => {
   );
 
   await new Promise((resolve) => {
+    if (process.env.NODE_ENV === 'test') {
+      resolve(null);
+      return;
+    }
     httpServer.listen({ port: process.env.LOCALHOST_PORT }, () => resolve(null));
   });
 

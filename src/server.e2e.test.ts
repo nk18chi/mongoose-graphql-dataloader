@@ -12,7 +12,6 @@ describe('e2e: server.ts', () => {
   describe('graphql-query-complexity', async () => {
     test('should throw error when complexity is greater than MAX_COMPLEXITY', async () => {
       vi.stubEnv('GRAPHQL_QUERY_MAX_COMPLEXITY', '5');
-      vi.stubEnv('LOCALHOST_PORT', '4001');
       const testApp = await runServer();
       const res = await request(testApp).post('/graphql').send({
         query: GQL_QUERY_USERS,
@@ -23,7 +22,6 @@ describe('e2e: server.ts', () => {
     });
 
     test('should log when complexity is less than MAX_COMPLEXITY', async () => {
-      vi.stubEnv('LOCALHOST_PORT', '4002');
       const testApp = await runServer();
       await request(testApp).post('/graphql').send({
         query: GQL_QUERY_USERS,
@@ -32,8 +30,6 @@ describe('e2e: server.ts', () => {
     });
 
     test('should skip introspection query', async () => {
-      vi.stubEnv('LOCALHOST_PORT', '4003');
-
       const testApp = await runServer();
       const res = await request(testApp)
         .post('/graphql')

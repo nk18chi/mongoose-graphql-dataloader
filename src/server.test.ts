@@ -33,6 +33,7 @@ describe('server.ts', () => {
   beforeEach(() => {
     vi.spyOn(ApolloServer.prototype, 'start').mockReturnValue(Promise.resolve());
     mockListen = vi.fn().mockImplementation((_, callback) => callback());
+    vi.unstubAllEnvs();
   });
   test('start apollo server', async () => {
     await runServer();
@@ -47,6 +48,7 @@ describe('server.ts', () => {
     });
   });
   test('listen localhost:4000', async () => {
+    vi.stubEnv('NODE_ENV', 'development');
     await runServer();
     expect(mockListen).toHaveBeenCalledTimes(1);
   });
