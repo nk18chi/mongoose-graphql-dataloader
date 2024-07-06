@@ -19,6 +19,7 @@ import Context from './graphql/interface/Context.interface';
 import permissions from './graphql/authorizations/permissions';
 
 const runServer = async () => {
+  console.log('MONGO_URI', process.env.MONGO_URI);
   console.log('a');
   const app = express();
   const httpServer = http.createServer(app);
