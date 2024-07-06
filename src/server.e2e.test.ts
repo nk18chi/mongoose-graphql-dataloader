@@ -6,6 +6,7 @@ import logger from './config/logger';
 import User from './models/User.schema';
 
 vi.mock('./config/logger');
+vi.mock('./mongo/connect');
 describe('e2e: server.ts', () => {
   beforeEach(() => {
     vi.unstubAllEnvs();
