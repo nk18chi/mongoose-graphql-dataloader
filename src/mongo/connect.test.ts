@@ -19,10 +19,10 @@ describe('connectMongoDB', () => {
     await connectMongoDB();
     expect(set).toHaveBeenCalledWith('debug', true);
   });
-  // test('call seedData function', async () => {
-  //   await connectMongoDB();
-  //   expect(seedData).toHaveBeenCalledTimes(1);
-  // });
+  test('call seedData function', async () => {
+    await connectMongoDB();
+    expect(seedData).toHaveBeenCalledTimes(1);
+  });
   test('log when mongoDB is ready', async () => {
     await connectMongoDB();
     expect(logger.info).toHaveBeenCalledWith(`🚀 MongoDB ready with ${process.env.MONGO_URI}`);

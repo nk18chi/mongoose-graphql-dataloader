@@ -26,11 +26,5 @@ jobs:
       - name: NPM Install
         run: npm install
 
-      - name: Add Mongo Cloud URI to .env
-        run: |
-          echo MONGO_URI=${MONGO_URI} >> .env
-        env:
-          MONGO_URI: ${{ secrets.MONGO_URI }}
-
       - name: Run unit tests
         run: npm run test

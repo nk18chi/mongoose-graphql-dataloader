@@ -19,11 +19,8 @@ import Context from './graphql/interface/Context.interface';
 import permissions from './graphql/authorizations/permissions';
 
 const runServer = async () => {
-  console.log('MONGO_URI', process.env.MONGO_URI.slice(0, 15));
-  console.log('a');
   const app = express();
   const httpServer = http.createServer(app);
-  console.log('b');
 
   const schema = applyMiddleware(
     makeExecutableSchema({
@@ -64,9 +61,7 @@ const runServer = async () => {
       },
     ],
   });
-  console.log('c');
   await server.start();
-  console.log('d');
 
   app.use(
     cors(),
@@ -79,7 +74,6 @@ const runServer = async () => {
       }),
     }),
   );
-  console.log('e');
   await new Promise((resolve) => {
     if (process.env.NODE_ENV === 'test') {
       resolve(null);
@@ -87,11 +81,8 @@ const runServer = async () => {
     }
     httpServer.listen({ port: process.env.LOCALHOST_PORT }, () => resolve(null));
   });
-  console.log('f');
   await connectMongoDB();
-  console.log('g');
   logger.info('🚀 Server ready at http://localhost:4000');
-  console.log('h');
 
   return app;
 };

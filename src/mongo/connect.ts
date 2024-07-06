@@ -3,13 +3,9 @@ import logger from '../config/logger';
 import seedData from './User.seed';
 
 const connectMongoDB = async () => {
-  console.log('!');
   await connect(process.env.MONGO_URI);
-  console.log('!!');
   set('debug', true);
-  console.log('!!!');
-  if (process.env.NODE_ENV !== 'test') await seedData();
-  console.log('!!!!');
+  await seedData();
   logger.info(`🚀 MongoDB ready with ${process.env.MONGO_URI}`);
 };
 

@@ -2,14 +2,11 @@ import logger from '../config/logger';
 import User from '../models/User.schema';
 
 const seedData = async () => {
-  console.log('?');
   const count = await User.countDocuments();
-  console.log('??', count);
   if (count > 0) {
     logger.info('Database already seeded');
     return;
   }
-  console.log('???');
   await User.insertMany(
     [
       { name: 'Alice' },
@@ -41,7 +38,7 @@ const seedData = async () => {
     ],
     { ordered: false },
   );
-  console.log('????');
+
   const followList = [
     {
       target: 'Alice',
@@ -58,7 +55,6 @@ const seedData = async () => {
     },
     { target: 'Frank', followers: ['Alice', 'Bob', 'Charlie', 'David', 'Eve'], following: ['Alice', 'Charlie'] },
   ];
-  console.log('?????');
   followList.map(async (list) => {
     const user = await User.findOne({ name: list.target });
     if (!user) {
@@ -77,7 +73,6 @@ const seedData = async () => {
       },
     );
   });
-  console.log('??????');
   logger.info('User data is seeded');
 };
 
