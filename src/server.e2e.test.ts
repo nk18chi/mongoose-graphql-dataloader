@@ -3,11 +3,13 @@ import request from 'supertest';
 import runServer from './server';
 import { GQL_QUERY_USERS } from './graphql/gql/User.gql';
 import logger from './config/logger';
+import User from './models/User.schema';
 
 vi.mock('./config/logger');
 describe('e2e: server.ts', () => {
   beforeEach(() => {
     vi.unstubAllEnvs();
+    vi.spyOn(User, 'find').mockResolvedValue([]);
   });
   describe('graphql-query-complexity', async () => {
     test('should throw error when complexity is greater than MAX_COMPLEXITY', async () => {
