@@ -8,7 +8,7 @@ const connectMongoDB = async () => {
   console.log('!!');
   set('debug', true);
   console.log('!!!');
-  await seedData();
+  if (process.env.NODE_ENV !== 'test') await seedData();
   console.log('!!!!');
   logger.info(`🚀 MongoDB ready with ${process.env.MONGO_URI}`);
 };
