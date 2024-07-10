@@ -28,4 +28,19 @@ const GQL_QUERY_OPTIMIZED_USERS = `
   }
 `;
 
-export { GQL_QUERY_USERS, GQL_QUERY_OPTIMIZED_USERS };
+const GQL_QUERY_AUTHORIZED_USERS = `
+  query AuthorizedGetUsers {
+    authorizedGetUsers {
+      name
+      _id
+      following {
+        name
+      }
+      followers {
+        name
+      }
+    }
+  }
+`;
+
+export { GQL_QUERY_USERS, GQL_QUERY_OPTIMIZED_USERS, GQL_QUERY_AUTHORIZED_USERS };

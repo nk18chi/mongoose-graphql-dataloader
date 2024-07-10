@@ -1,12 +1,16 @@
 import { test, describe, vi, expect, beforeEach, assert } from 'vitest';
 import { ApolloServer } from '@apollo/server';
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { applyMiddleware } from 'graphql-middleware';
+import { Types } from 'mongoose';
 import Context from '../interface/Context.interface';
 import typeDefs from '../schemas';
 import resolvers from '.';
 import User from '../../models/User.schema';
 import IUser from '../../models/User.type';
 import userDataLoader from '../../dataloader/User.dataLoader';
-import { GQL_QUERY_USERS, GQL_QUERY_OPTIMIZED_USERS } from '../gql/User.gql';
+import { GQL_QUERY_USERS, GQL_QUERY_OPTIMIZED_USERS, GQL_QUERY_AUTHORIZED_USERS } from '../gql/User.gql';
+import permissions from '../authorizations/permissions';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const usersMock: any = [
@@ -30,9 +34,16 @@ const usersMock: any = [
   },
 ];
 describe('User.resolver.ts', () => {
+  const schema = applyMiddleware(
+    makeExecutableSchema({
+      typeDefs,
+      resolvers,
+    }),
+    permissions,
+  );
+
   const testServer = new ApolloServer<Context>({
-    typeDefs,
-    resolvers,
+    schema,
   });
 
   beforeEach(() => {
@@ -64,5 +75,33 @@ describe('User.resolver.ts', () => {
     assert(response.body.kind === 'single');
     expect(response.body.singleResult.errors).toBeUndefined();
     expect(response.body.singleResult.data?.optimizedGetUsers.length).toBe(usersMock.length);
+  });
+  test('should call authorizedGetUsers with user context', async () => {
+    const response = await testServer.executeOperation<{ authorizedGetUsers: IUser[] }>(
+      {
+        query: GQL_QUERY_AUTHORIZED_USERS,
+      },
+      {
+        contextValue: {
+          user: {
+            _id: new Types.ObjectId(),
+          },
+          dataLoaders: {
+            userDataLoader,
+          },
+        },
+      },
+    );
+    assert(response.body.kind === 'single');
+    expect(response.body.singleResult.errors).toBeUndefined();
+    expect(response.body.singleResult.data?.authorizedGetUsers.length).toBe(usersMock.length);
+  });
+  test('should not call authorizedGetUsers without user context', async () => {
+    const response = await testServer.executeOperation<{ authorizedGetUsers: IUser[] }>({
+      query: GQL_QUERY_AUTHORIZED_USERS,
+    });
+    assert(response.body.kind === 'single');
+    expect(response.body.singleResult.errors).toBeDefined();
+    expect(response.body.singleResult.errors?.[0].message).toEqual('Not Authorised!');
   });
 });
