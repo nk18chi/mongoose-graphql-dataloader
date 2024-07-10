@@ -5,6 +5,7 @@ declare global {
       NODE_ENV: 'development' | 'production' | 'test';
       GRAPHQL_QUERY_MAX_COMPLEXITY: number;
       LOCALHOST_PORT: number;
+      JWT_PRIVATE_KEY: string;
     }
   }
 }

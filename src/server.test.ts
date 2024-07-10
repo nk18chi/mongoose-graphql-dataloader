@@ -39,9 +39,23 @@ describe('server.ts', () => {
     await runServer();
     expect(ApolloServer.prototype.start).toHaveBeenCalledTimes(1);
   });
-  test('start apollo server', async () => {
+  test('set context', async () => {
     await runServer();
-    expect(await (expressMiddleware as Mock).mock.calls[0][1].context()).toEqual({
+    expect(
+      await (expressMiddleware as Mock).mock.calls[0][1].context({
+        req: {
+          headers: {
+            authorization:
+              // eslint-disable-next-line max-len
+              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjhlMTY5ZDU4Yjg2MDQ1YzFjNWEyYWEiLCJpYXQiOjE3MjA1ODc5MzN9.7YYezMRB5QTK8Ye7lSD2wwm5oWsP1A3u0Qcf-JgovFM',
+          },
+        },
+      }),
+    ).toEqual({
+      user: {
+        _id: '668e169d58b86045c1c5a2aa',
+        iat: 1720587933,
+      },
       dataLoaders: {
         userDataLoader,
       },

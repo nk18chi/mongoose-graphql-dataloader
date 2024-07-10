@@ -9,6 +9,7 @@ import { applyMiddleware } from 'graphql-middleware';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { fieldExtensionsEstimator, getComplexity, simpleEstimator } from 'graphql-query-complexity';
 import { OperationDefinitionNode as OperationNode } from 'graphql';
+import jwt from 'jsonwebtoken';
 import connectMongoDB from './mongo/connect';
 import logger from './config/logger';
 import typeDefs from './graphql/schemas';
@@ -17,6 +18,7 @@ import 'dotenv/config';
 import userDataLoader from './dataloader/User.dataLoader';
 import Context from './graphql/interface/Context.interface';
 import permissions from './graphql/authorizations/permissions';
+import IAuthorizedUser from './graphql/interface/AuthorizedUser.interface';
 
 const runServer = async () => {
   const app = express();
@@ -67,7 +69,10 @@ const runServer = async () => {
     cors(),
     bodyParser.json(),
     expressMiddleware(server, {
-      context: async () => ({
+      context: async ({ req }) => ({
+        user: req.headers.authorization
+          ? (jwt.verify(req.headers.authorization, process.env.JWT_PRIVATE_KEY) as IAuthorizedUser)
+          : undefined,
         dataLoaders: {
           userDataLoader,
         },
