@@ -11,12 +11,7 @@
   "rules": {
     "no-underscore-dangle": "off",
     "max-len": ["error", { "code": 120 }],
-    "object-curly-newline": [
-      "error",
-      {
-        "ImportDeclaration": "never"
-      }
-    ],
+    "object-curly-newline": "off",
     "import/extensions": [
       "error",
       "ignorePackages",

@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import jwt from 'jsonwebtoken';
 import User from '../../models/User.schema';
 import { Resolvers } from '../types';
 import IUser from '../../models/User.type';
@@ -13,6 +14,10 @@ const userResolver: Resolvers = {
     optimizedGetUsers: async () => User.find(),
 
     authorizedGetUsers: async () => User.find(),
+    userToken: async () => {
+      const privateKey = process.env.JWT_PRIVATE_KEY.replace(/\\n/g, '\n');
+      return jwt.sign({ _id: new Types.ObjectId() }, privateKey);
+    },
   },
   User: {
     followers: async (user) => User.find({ _id: { $in: user.followers } }),

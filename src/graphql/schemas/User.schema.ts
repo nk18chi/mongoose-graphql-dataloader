@@ -17,6 +17,7 @@ type Query {
   getUsers: [User]
   optimizedGetUsers: [OptimizedUser]
   authorizedGetUsers: [User]
+  userToken: String
 }
 `;
 

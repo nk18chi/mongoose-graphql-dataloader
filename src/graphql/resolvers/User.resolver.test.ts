@@ -9,7 +9,12 @@ import resolvers from '.';
 import User from '../../models/User.schema';
 import IUser from '../../models/User.type';
 import userDataLoader from '../../dataloader/User.dataLoader';
-import { GQL_QUERY_USERS, GQL_QUERY_OPTIMIZED_USERS, GQL_QUERY_AUTHORIZED_USERS } from '../gql/User.gql';
+import {
+  GQL_QUERY_USERS,
+  GQL_QUERY_OPTIMIZED_USERS,
+  GQL_QUERY_AUTHORIZED_USERS,
+  GQL_QUERY_USER_TOKEN,
+} from '../gql/User.gql';
 import permissions from '../authorizations/permissions';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,6 +53,7 @@ describe('User.resolver.ts', () => {
 
   beforeEach(() => {
     vi.spyOn(User, 'find').mockReturnValue(usersMock);
+    vi.stubEnv('JWT_PRIVATE_KEY', 'testJWTPrivateKey');
   });
   test('should call getUsers with following/followers', async () => {
     const response = await testServer.executeOperation<{ getUsers: IUser[] }>({
@@ -103,5 +109,16 @@ describe('User.resolver.ts', () => {
     assert(response.body.kind === 'single');
     expect(response.body.singleResult.errors).toBeDefined();
     expect(response.body.singleResult.errors?.[0].message).toEqual('Not Authorised!');
+  });
+  test('should return user token', async () => {
+    const response = await testServer.executeOperation<{ userToken: string }>(
+      {
+        query: GQL_QUERY_USER_TOKEN,
+      },
+      {},
+    );
+    assert(response.body.kind === 'single');
+    expect(response.body.singleResult.errors).toBeUndefined();
+    expect(response.body.singleResult.data?.userToken).toBeDefined();
   });
 });

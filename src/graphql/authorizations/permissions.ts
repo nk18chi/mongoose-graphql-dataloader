@@ -6,6 +6,7 @@ const permissions = shield({
     '*': isAuthenticated,
     getUsers: allow,
     optimizedGetUsers: allow,
+    userToken: allow,
   },
 });
 

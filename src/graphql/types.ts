@@ -31,6 +31,7 @@ export type Query = {
   authorizedGetUsers?: Maybe<Array<Maybe<User>>>;
   getUsers?: Maybe<Array<Maybe<User>>>;
   optimizedGetUsers?: Maybe<Array<Maybe<OptimizedUser>>>;
+  userToken?: Maybe<Scalars['String']['output']>;
 };
 
 export type User = {
@@ -157,6 +158,7 @@ export type QueryResolvers<
   authorizedGetUsers?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
   getUsers?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
   optimizedGetUsers?: Resolver<Maybe<Array<Maybe<ResolversTypes['OptimizedUser']>>>, ParentType, ContextType>;
+  userToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 };
 
 export type UserResolvers<
