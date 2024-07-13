@@ -1,6 +1,7 @@
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import { ApolloServerPluginCacheControl } from '@apollo/server/plugin/cacheControl';
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
@@ -35,6 +36,7 @@ const runServer = async () => {
   const MAX_COMPLEXITY = process.env.GRAPHQL_QUERY_MAX_COMPLEXITY;
   const server = new ApolloServer<Context>({
     schema,
+    persistedQueries: {},
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
       {
@@ -61,6 +63,7 @@ const runServer = async () => {
           },
         }),
       },
+      ApolloServerPluginCacheControl({ defaultMaxAge: 5 }),
     ],
   });
   await server.start();

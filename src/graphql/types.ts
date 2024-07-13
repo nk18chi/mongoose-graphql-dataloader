@@ -18,6 +18,11 @@ export type Scalars = {
   Float: { input: number; output: number };
 };
 
+export enum CacheControlScope {
+  Private = 'PRIVATE',
+  Public = 'PUBLIC',
+}
+
 export type OptimizedUser = {
   __typename?: 'OptimizedUser';
   _id: Scalars['ID']['output'];
@@ -115,7 +120,9 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  CacheControlScope: CacheControlScope;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   OptimizedUser: ResolverTypeWrapper<
     Omit<OptimizedUser, 'followers' | 'following'> & {
       followers?: Maybe<Array<Maybe<ResolversTypes['User']>>>;
@@ -131,6 +138,7 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
   ID: Scalars['ID']['output'];
+  Int: Scalars['Int']['output'];
   OptimizedUser: Omit<OptimizedUser, 'followers' | 'following'> & {
     followers?: Maybe<Array<Maybe<ResolversParentTypes['User']>>>;
     following?: Maybe<Array<Maybe<ResolversParentTypes['User']>>>;
@@ -139,6 +147,19 @@ export type ResolversParentTypes = {
   String: Scalars['String']['output'];
   User: IUser;
 };
+
+export type CacheControlDirectiveArgs = {
+  inheritMaxAge?: Maybe<Scalars['Boolean']['input']>;
+  maxAge?: Maybe<Scalars['Int']['input']>;
+  scope?: Maybe<CacheControlScope>;
+};
+
+export type CacheControlDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = Context,
+  Args = CacheControlDirectiveArgs,
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type OptimizedUserResolvers<
   ContextType = Context,
@@ -176,4 +197,8 @@ export type Resolvers<ContextType = Context> = {
   OptimizedUser?: OptimizedUserResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
+};
+
+export type DirectiveResolvers<ContextType = Context> = {
+  cacheControl?: CacheControlDirectiveResolver<any, any, ContextType>;
 };

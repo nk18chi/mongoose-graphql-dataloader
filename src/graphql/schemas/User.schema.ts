@@ -1,12 +1,12 @@
 const userTypeDef = `#graphql
-type User {
+type User @cacheControl(maxAge: 60) {
   _id: ID!
   name: String!
   followers: [User]
   following: [User]
 }
 
-type OptimizedUser {
+type OptimizedUser @cacheControl(maxAge: 60) {
   _id: ID!
   name: String!
   followers: [User]
@@ -17,7 +17,7 @@ type Query {
   getUsers: [User]
   optimizedGetUsers: [OptimizedUser]
   authorizedGetUsers: [User]
-  userToken: String
+  userToken: String @cacheControl(maxAge: 0)
 }
 `;
 
