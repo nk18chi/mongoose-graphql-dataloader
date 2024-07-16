@@ -27,4 +27,4 @@ jobs:
         run: npm install
 
       - name: Run unit tests
-        run: npm run test
+        run: npx lerna run test

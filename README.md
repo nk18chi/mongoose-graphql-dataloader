@@ -38,6 +38,7 @@ The sample project with Mongo, Graphql and Typescript to deal with N + 1 problem
 ```
 nvm use v20 or the equivalent command to switch node version to v20
 git clone git@github.com:nk18chi/mongoose-graphql-dataloader.git
+nvm use v20
 npm install
-npm run dev
+lerna run dev --parallel
 ```
