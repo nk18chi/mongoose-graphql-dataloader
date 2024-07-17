@@ -1,6 +1,10 @@
+import ClientComponent from '@/components/ClientComponent';
+import ServerComponent from '@/components/ServerComponent';
 import Image from 'next/image';
+import { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
-export default function Home() {
+export default async function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
@@ -98,6 +102,16 @@ export default function Home() {
           </p>
         </a>
       </div>
+      <ErrorBoundary fallback={<div>Something went wrong</div>}>
+        <Suspense fallback={<>loading</>}>
+          <ClientComponent />
+        </Suspense>
+      </ErrorBoundary>
+      <ErrorBoundary fallback={<div>Something went wrong</div>}>
+        <Suspense fallback={<>loading</>}>
+          <ServerComponent />
+        </Suspense>
+      </ErrorBoundary>
     </main>
   );
 }
