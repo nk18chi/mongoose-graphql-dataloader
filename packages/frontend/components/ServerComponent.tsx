@@ -9,6 +9,5 @@ const GET_USER_TOKEN = gql`
 
 export default async function ServerComponent() {
   const { data } = await query({ query: GET_USER_TOKEN });
-
   return <p>Server Component Token: {data.userToken}</p>;
 }
