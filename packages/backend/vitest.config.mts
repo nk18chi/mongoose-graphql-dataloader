@@ -7,7 +7,7 @@ export default defineConfig({
     clearMocks: true,
     globals: true,
     coverage: {
-      exclude: ['html/assets/**', 'src/index.ts', 'src/models/**', '**/*.seed.ts'],
+      exclude: ['html/assets/**', 'src/index.ts', 'src/models/**', '**/*.seed.ts', '**/types.ts'],
       enabled: true,
       thresholds: {
         branches: 100,

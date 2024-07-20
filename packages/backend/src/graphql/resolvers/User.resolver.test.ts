@@ -3,6 +3,7 @@ import { ApolloServer } from '@apollo/server';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { applyMiddleware } from 'graphql-middleware';
 import { Types } from 'mongoose';
+import { rateLimitDirective } from 'graphql-rate-limit-directive';
 import Context from '../interface/Context.interface';
 import typeDefs from '../schemas';
 import resolvers from '.';
@@ -16,6 +17,8 @@ import {
   GQL_QUERY_USER_TOKEN,
 } from '../gql/User.gql';
 import permissions from '../authorizations/permissions';
+
+const { rateLimitDirectiveTypeDefs, rateLimitDirectiveTransformer } = rateLimitDirective();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const usersMock: any = [
@@ -41,14 +44,14 @@ const usersMock: any = [
 describe('User.resolver.ts', () => {
   const schema = applyMiddleware(
     makeExecutableSchema({
-      typeDefs,
+      typeDefs: [...typeDefs, rateLimitDirectiveTypeDefs],
       resolvers,
     }),
     permissions,
   );
 
   const testServer = new ApolloServer<Context>({
-    schema,
+    schema: rateLimitDirectiveTransformer(schema),
   });
 
   beforeEach(() => {
