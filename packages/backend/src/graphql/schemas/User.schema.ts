@@ -17,7 +17,7 @@ type Query {
   getUsers: [User]
   optimizedGetUsers: [OptimizedUser]
   authorizedGetUsers: [User]
-  userToken: String @cacheControl(maxAge: 0)
+  userToken: String @cacheControl(maxAge: 0) @rateLimit(limit: 3, duration: 5)
 }
 `;
 

@@ -11,6 +11,7 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import { fieldExtensionsEstimator, getComplexity, simpleEstimator } from 'graphql-query-complexity';
 import { OperationDefinitionNode as OperationNode } from 'graphql';
 import jwt from 'jsonwebtoken';
+import { rateLimitDirective } from 'graphql-rate-limit-directive';
 import connectMongoDB from './mongo/connect';
 import logger from './config/logger';
 import typeDefs from './graphql/schemas';
@@ -21,13 +22,15 @@ import Context from './graphql/interface/Context.interface';
 import permissions from './graphql/authorizations/permissions';
 import IAuthorizedUser from './graphql/interface/AuthorizedUser.interface';
 
+const { rateLimitDirectiveTypeDefs, rateLimitDirectiveTransformer } = rateLimitDirective();
+
 const runServer = async () => {
   const app = express();
   const httpServer = http.createServer(app);
 
   const schema = applyMiddleware(
     makeExecutableSchema({
-      typeDefs,
+      typeDefs: [...typeDefs, rateLimitDirectiveTypeDefs],
       resolvers,
     }),
     permissions,
@@ -35,7 +38,7 @@ const runServer = async () => {
 
   const MAX_COMPLEXITY = process.env.GRAPHQL_QUERY_MAX_COMPLEXITY;
   const server = new ApolloServer<Context>({
-    schema,
+    schema: rateLimitDirectiveTransformer(schema),
     persistedQueries: {},
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
