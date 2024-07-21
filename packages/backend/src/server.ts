@@ -12,6 +12,7 @@ import { fieldExtensionsEstimator, getComplexity, simpleEstimator } from 'graphq
 import { OperationDefinitionNode as OperationNode } from 'graphql';
 import jwt from 'jsonwebtoken';
 import { rateLimitDirective } from 'graphql-rate-limit-directive';
+import { ApolloServerErrorCode } from '@apollo/server/errors';
 import connectMongoDB from './mongo/connect';
 import logger from './config/logger';
 import typeDefs from './graphql/schemas';
@@ -68,6 +69,14 @@ const runServer = async () => {
       },
       ApolloServerPluginCacheControl({ defaultMaxAge: 5 }),
     ],
+    formatError: (formattedError) => {
+      if (process.env.NODE_ENV !== 'production') return formattedError;
+      if (formattedError.extensions?.code !== ApolloServerErrorCode.GRAPHQL_VALIDATION_FAILED) return formattedError;
+      return {
+        ...formattedError,
+        message: "Your query doesn't match the schema. Try double-checking it!",
+      };
+    },
   });
   await server.start();
 
