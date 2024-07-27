@@ -48,5 +48,49 @@ describe('e2e: server.ts', () => {
       expect(res.body.errors?.[0]?.message).not.toBeDefined();
       expect(logger.info).not.toHaveBeenCalledWith('Used query complexity points: 0 by IntrospectionQuery');
     });
+    test('should return throw detailed graphql error in development when a query is wrong', async () => {
+      vi.stubEnv('LOCALHOST_PORT', '4001');
+      vi.stubEnv('NODE_ENV', 'development');
+      const testApp = await runServer();
+      const res = await request(testApp)
+        .post('/graphql')
+        .send({
+          query: `query IntrospectionQuery {
+            __schema {
+              typess {
+                name
+              }
+            }
+          }`,
+        });
+      expect(res.body.errors[0].message).toBe('Cannot query field "typess" on type "__Schema". Did you mean "types"?');
+    });
+    test('should return throw detailed graphql error in production if a graphql query is fine', async () => {
+      vi.stubEnv('NODE_ENV', 'production');
+      vi.stubEnv('LOCALHOST_PORT', '4002');
+      vi.spyOn(User, 'find').mockRejectedValue(new Error('MongoError'));
+      const testApp = await runServer();
+      const res = await request(testApp).post('/graphql').send({
+        query: GQL_QUERY_USERS,
+      });
+      expect(res.body.errors[0].message).toBe('MongoError');
+    });
+    test('should override error message in production when a query is wrong', async () => {
+      vi.stubEnv('NODE_ENV', 'production');
+      vi.stubEnv('LOCALHOST_PORT', '4003');
+      const testApp = await runServer();
+      const res = await request(testApp)
+        .post('/graphql')
+        .send({
+          query: `query IntrospectionQuery {
+            __schema {
+              typesss {
+                name
+              }
+            }
+          }`,
+        });
+      expect(res.body.errors[0].message).toBe("Your query doesn't match the schema. Try double-checking it!");
+    });
   });
 });
