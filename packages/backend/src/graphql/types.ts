@@ -1,6 +1,7 @@
 import { GraphQLResolveInfo } from 'graphql';
 import { IUser } from '../models/User.type';
 import { Context } from './interface/Context.interface';
+
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -9,6 +10,7 @@ export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Mayb
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string };
@@ -31,12 +33,24 @@ export type OptimizedUser = {
   name: Scalars['String']['output'];
 };
 
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  endCursor?: Maybe<Scalars['String']['output']>;
+  hasNextPage?: Maybe<Scalars['Boolean']['output']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   authorizedGetUsers?: Maybe<Array<Maybe<User>>>;
   getUsers?: Maybe<Array<Maybe<User>>>;
   optimizedGetUsers?: Maybe<Array<Maybe<OptimizedUser>>>;
   userToken?: Maybe<Scalars['String']['output']>;
+  users?: Maybe<UserConnection>;
+};
+
+export type QueryUsersArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  first: Scalars['Int']['input'];
 };
 
 export type User = {
@@ -45,6 +59,18 @@ export type User = {
   followers?: Maybe<Array<Maybe<User>>>;
   following?: Maybe<Array<Maybe<User>>>;
   name: Scalars['String']['output'];
+};
+
+export type UserConnection = {
+  __typename?: 'UserConnection';
+  edges?: Maybe<Array<Maybe<UserEdge>>>;
+  pageInfo?: Maybe<PageInfo>;
+};
+
+export type UserEdge = {
+  __typename?: 'UserEdge';
+  cursor?: Maybe<Scalars['String']['output']>;
+  node?: Maybe<User>;
 };
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -129,9 +155,14 @@ export type ResolversTypes = {
       following?: Maybe<Array<Maybe<ResolversTypes['User']>>>;
     }
   >;
+  PageInfo: ResolverTypeWrapper<PageInfo>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   User: ResolverTypeWrapper<IUser>;
+  UserConnection: ResolverTypeWrapper<
+    Omit<UserConnection, 'edges'> & { edges?: Maybe<Array<Maybe<ResolversTypes['UserEdge']>>> }
+  >;
+  UserEdge: ResolverTypeWrapper<Omit<UserEdge, 'node'> & { node?: Maybe<ResolversTypes['User']> }>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -143,9 +174,12 @@ export type ResolversParentTypes = {
     followers?: Maybe<Array<Maybe<ResolversParentTypes['User']>>>;
     following?: Maybe<Array<Maybe<ResolversParentTypes['User']>>>;
   };
+  PageInfo: PageInfo;
   Query: {};
   String: Scalars['String']['output'];
   User: IUser;
+  UserConnection: Omit<UserConnection, 'edges'> & { edges?: Maybe<Array<Maybe<ResolversParentTypes['UserEdge']>>> };
+  UserEdge: Omit<UserEdge, 'node'> & { node?: Maybe<ResolversParentTypes['User']> };
 };
 
 export type CacheControlDirectiveArgs = {
@@ -161,6 +195,18 @@ export type CacheControlDirectiveResolver<
   Args = CacheControlDirectiveArgs,
 > = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
+export type RateLimitDirectiveArgs = {
+  duration?: Scalars['Int']['input'];
+  limit?: Scalars['Int']['input'];
+};
+
+export type RateLimitDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = Context,
+  Args = RateLimitDirectiveArgs,
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
 export type OptimizedUserResolvers<
   ContextType = Context,
   ParentType extends ResolversParentTypes['OptimizedUser'] = ResolversParentTypes['OptimizedUser'],
@@ -172,6 +218,15 @@ export type OptimizedUserResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type PageInfoResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo'],
+> = {
+  endCursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  hasNextPage?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<
   ContextType = Context,
   ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query'],
@@ -180,6 +235,12 @@ export type QueryResolvers<
   getUsers?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
   optimizedGetUsers?: Resolver<Maybe<Array<Maybe<ResolversTypes['OptimizedUser']>>>, ParentType, ContextType>;
   userToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  users?: Resolver<
+    Maybe<ResolversTypes['UserConnection']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryUsersArgs, 'first'>
+  >;
 };
 
 export type UserResolvers<
@@ -193,12 +254,34 @@ export type UserResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type UserConnectionResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes['UserConnection'] = ResolversParentTypes['UserConnection'],
+> = {
+  edges?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserEdge']>>>, ParentType, ContextType>;
+  pageInfo?: Resolver<Maybe<ResolversTypes['PageInfo']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserEdgeResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes['UserEdge'] = ResolversParentTypes['UserEdge'],
+> = {
+  cursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  node?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = Context> = {
   OptimizedUser?: OptimizedUserResolvers<ContextType>;
+  PageInfo?: PageInfoResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
+  UserConnection?: UserConnectionResolvers<ContextType>;
+  UserEdge?: UserEdgeResolvers<ContextType>;
 };
 
 export type DirectiveResolvers<ContextType = Context> = {
   cacheControl?: CacheControlDirectiveResolver<any, any, ContextType>;
+  rateLimit?: RateLimitDirectiveResolver<any, any, ContextType>;
 };

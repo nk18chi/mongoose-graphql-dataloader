@@ -13,7 +13,23 @@ type OptimizedUser @cacheControl(maxAge: 60) {
   following: [User]
 }
 
+type UserConnection {
+  edges: [UserEdge]
+  pageInfo: PageInfo
+}
+
+type UserEdge {
+  node: User
+  cursor: String
+}
+
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean
+}
+
 type Query {
+  users(first: Int!, after: String): UserConnection
   getUsers: [User]
   optimizedGetUsers: [OptimizedUser]
   authorizedGetUsers: [User]
