@@ -20,7 +20,10 @@ const mockUsers = [
 const userIds = mockUsers.map((user) => user._id);
 describe('userDataloader', () => {
   beforeEach(() => {
-    vi.spyOn(User, 'find').mockResolvedValue(mockUsers);
+    vi.spyOn(User, 'find').mockReturnValue({
+      lean: vi.fn().mockReturnValue(mockUsers),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
   });
   test('should set unique userIds in fetching users from DB', async () => {
     await userDataLoader.loadMany([...userIds, userIds[0]]);

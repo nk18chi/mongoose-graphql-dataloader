@@ -5,6 +5,7 @@ const permissions = shield(
   {
     Query: {
       '*': isAuthenticated,
+      users: allow,
       getUsers: allow,
       optimizedGetUsers: allow,
       userToken: allow,

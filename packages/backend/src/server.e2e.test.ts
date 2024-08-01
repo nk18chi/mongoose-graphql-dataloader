@@ -1,7 +1,7 @@
 import { expect, test, describe, vi, beforeEach } from 'vitest';
 import request from 'supertest';
 import runServer from './server';
-import { GQL_QUERY_USERS } from './graphql/gql/User.gql';
+import { GQL_QUERY_GET_USERS } from './graphql/gql/User.gql';
 import logger from './config/logger';
 import User from './models/User.schema';
 
@@ -17,7 +17,7 @@ describe('e2e: server.ts', () => {
       vi.stubEnv('GRAPHQL_QUERY_MAX_COMPLEXITY', '5');
       const testApp = await runServer();
       const res = await request(testApp).post('/graphql').send({
-        query: GQL_QUERY_USERS,
+        query: GQL_QUERY_GET_USERS,
       });
       expect(res.body.errors[0].message).toBe(
         'Sorry, too complicated query! 7 exceeded the maximum allowed complexity of 5 by Users',
@@ -27,7 +27,7 @@ describe('e2e: server.ts', () => {
     test('should log when complexity is less than MAX_COMPLEXITY', async () => {
       const testApp = await runServer();
       await request(testApp).post('/graphql').send({
-        query: GQL_QUERY_USERS,
+        query: GQL_QUERY_GET_USERS,
       });
       expect(logger.info).toHaveBeenCalledWith('Used query complexity points: 7 by Users');
     });
@@ -68,10 +68,11 @@ describe('e2e: server.ts', () => {
     test('should return throw detailed graphql error in production if a graphql query is fine', async () => {
       vi.stubEnv('NODE_ENV', 'production');
       vi.stubEnv('LOCALHOST_PORT', '4002');
-      vi.spyOn(User, 'find').mockRejectedValue(new Error('MongoError'));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      vi.spyOn(User, 'find').mockReturnValue({ lean: vi.fn().mockRejectedValue(new Error('MongoError')) } as any);
       const testApp = await runServer();
       const res = await request(testApp).post('/graphql').send({
-        query: GQL_QUERY_USERS,
+        query: GQL_QUERY_GET_USERS,
       });
       expect(res.body.errors[0].message).toBe('MongoError');
     });
