@@ -1,4 +1,5 @@
 import ClientComponent from '@/components/ClientComponent';
+import RelayPaginationComponent from '@/components/RelayPaginationComponent';
 import ServerComponent from '@/components/ServerComponent';
 import Image from 'next/image';
 import { Suspense } from 'react';
@@ -102,6 +103,7 @@ export default async function Home() {
           </p>
         </a>
       </div>
+      <RelayPaginationComponent />
       <ErrorBoundary fallback={<div>Something went wrong</div>}>
         <Suspense fallback={<>loading</>}>
           <ClientComponent />
