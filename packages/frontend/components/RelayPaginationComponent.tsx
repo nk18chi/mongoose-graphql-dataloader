@@ -1,9 +1,9 @@
 'use client';
 
-import { UserConnection } from '@/gql/types';
-import { gql, useQuery } from '@apollo/client';
+import { graphql } from '@/gql/types';
+import { useQuery } from '@apollo/client';
 
-const GET_USERS = gql`
+const GET_USERS = graphql(`
   query Users($first: Int!, $after: String) {
     users(first: $first, after: $after) {
       edges {
@@ -27,19 +27,19 @@ const GET_USERS = gql`
       }
     }
   }
-`;
+`);
 const pagination = 10;
 
 export default function RelayPaginationComponent() {
-  const { loading, data, fetchMore } = useQuery<{ users: UserConnection }>(GET_USERS, {
+  const { loading, data, fetchMore } = useQuery(GET_USERS, {
     variables: { first: pagination },
   });
   if (loading) return <p>Loading...</p>;
   return (
     <>
       <p>Users</p>
-      <ul>{data?.users.edges?.map((edge) => <li key={edge?.cursor}>{edge?.node?.name}</li>)}</ul>
-      {data?.users.pageInfo?.hasNextPage && (
+      <ul>{data?.users?.edges?.map((edge) => <li key={edge?.cursor}>{edge?.node?.name}</li>)}</ul>
+      {data?.users?.pageInfo?.hasNextPage && (
         <button
           onClick={() => {
             fetchMore({
